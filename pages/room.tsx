@@ -18,6 +18,11 @@ export default function Home() {
   const { roomId, memberId } = useRoom();
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection>()
   const [localStream, setLocalStream] = useState<MediaStream>()
+  const [remoteStream1, setRemoteStream1] = useState<MediaStream>()
+  const [remoteStream2, setRemoteStream2] = useState<MediaStream>()
+  const [remoteStream3, setRemoteStream3] = useState<MediaStream>()
+  const [remoteStream4, setRemoteStream4] = useState<MediaStream>()
+  const [remoteStream5, setRemoteStream5] = useState<MediaStream>()
   const [remoteStream, setRemoteStream] = useState<MediaStream[]>([])
   let remoteStreams: MediaStream[] = [
   ];
@@ -133,6 +138,56 @@ export default function Home() {
       console.log("streams length", event.streams.length);
 
       remoteStreams.push(event.streams[0]);
+
+      if (remoteStreams.length === 2) {
+        let stream1 = new MediaStream();
+        event.streams[0].getTracks().forEach((track) => {
+          stream1.addTrack(track);
+        });
+        console.log("stream", stream1);
+        setRemoteStream1(stream1);
+      }
+
+      if (remoteStreams.length === 3) {
+        let stream2 = new MediaStream();
+        event.streams[0].getTracks().forEach((track) => {
+          console.log("track", track);
+          stream2.addTrack(track);
+        });
+        console.log("stream2", stream2);
+        setRemoteStream2(stream2);
+      }
+
+      if (remoteStreams.length === 4) {
+        let stream3 = new MediaStream();
+        event.streams[0].getTracks().forEach((track) => {
+          console.log("track", track);
+          stream3.addTrack(track);
+        });
+        console.log("stream3", stream3);
+        setRemoteStream3(stream3);
+      }
+
+      if (remoteStreams.length === 5) {
+        let stream4 = new MediaStream();
+        event.streams[0].getTracks().forEach((track) => {
+          console.log("track", track);
+          stream4.addTrack(track);
+        });
+        console.log("stream4", stream4);
+        setRemoteStream4(stream4);
+      }
+
+      if (remoteStreams.length === 6) {
+        let stream5 = new MediaStream();
+        event.streams[0].getTracks().forEach((track) => {
+          console.log("track", track);
+          stream5.addTrack(track);
+        });
+        console.log("stream5", stream5);
+        setRemoteStream5(stream5);
+      }
+
       setRemoteStream(remoteStreams);
 
       // event.streams[0].getTracks().forEach((track) => {
@@ -144,28 +199,31 @@ export default function Home() {
 
 
   const setupOffer = async ({ sdp, type }: { sdp: string, type: RTCSdpType }) => {
+    try {
+      if (peerConnection) {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription({
+          sdp: sdp,
+          type: type
+        }));
 
-    if (peerConnection) {
-      await peerConnection.setRemoteDescription(new RTCSessionDescription({
-        sdp: sdp,
-        type: type
-      }));
+        const answerDescription = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answerDescription);
 
-      const answerDescription = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answerDescription);
-
-      let data = await sendAnswer({
-        variables: {
-          "input": {
-            answer: {
-              SDP: answerDescription.sdp,
-              Type: answerDescription.type
-            },
-            memberId: memberId,
+        let data = await sendAnswer({
+          variables: {
+            "input": {
+              answer: {
+                SDP: answerDescription.sdp,
+                Type: answerDescription.type
+              },
+              memberId: memberId,
+            }
           }
-        }
-      });
-      console.log("sendAnswer", data)
+        });
+        console.log("sendAnswer", data)
+      }
+    } catch (e) {
+      console.error("add ice candidate", e);
     }
   }
 
@@ -179,7 +237,7 @@ export default function Home() {
         });
         await peerConnection.addIceCandidate(iceCandidate);
       } catch (e) {
-        console.log(e)
+        console.error("add ice candidate", e);
       }
     }
   }
@@ -240,14 +298,30 @@ export default function Home() {
           </div>
 
           <div className='w-full flex gap-x-10 gap-y-5 mt-10 justify-center  flex-wrap px-32'>
-            {remoteStream?.length}
+            {/* {remoteStream?.length}
             {remoteStream && remoteStream.map((data, index) => {
               return <div className='h-[100px] w-[130px] overflow-hidden rounded ' key={index}>
                 {data && <AudioComponent srcObject={data} autoPlay playsInline controls className='w-full h-full' />}
               </div>
             })
-            }
+            } */}
+            <div className='h-[50px] w-[250px] overflow-hidden rounded bg-white' >
+              {remoteStream1 && <AudioComponent srcObject={remoteStream1} autoPlay controls className='w-full h-full' />}
+            </div>
 
+            <div className='h-[50px] w-[250px] overflow-hidden rounded bg-white' >
+              {remoteStream2 && <AudioComponent srcObject={remoteStream2} autoPlay controls className='w-full h-full' />}
+            </div>
+            <div className='h-[50px] w-[250px] overflow-hidden rounded bg-white' >
+              {remoteStream3 && <AudioComponent srcObject={remoteStream3} autoPlay controls className='w-full h-full' />}
+            </div>
+
+            <div className='h-[50px] w-[250px] overflow-hidden rounded bg-white' >
+              {remoteStream4 && <AudioComponent srcObject={remoteStream4} autoPlay controls className='w-full h-full' />}
+            </div>
+            <div className='h-[50px] w-[250px] overflow-hidden rounded bg-white' >
+              {remoteStream5 && <AudioComponent srcObject={remoteStream5} autoPlay controls className='w-full h-full' />}
+            </div>
           </div>
           {/* <h4>New comment: {!loading && data}</h4> */}
         </main >

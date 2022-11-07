@@ -9,13 +9,13 @@ export default function AudioComponent({ srcObject, ...props }: PropsType) {
 
     useEffect(() => {
         if (!refAudio.current) return
-        let stream =
-            new MediaStream();
 
-        srcObject.getTracks().forEach((track) => {
-            stream.addTrack(track);
-        });
-        refAudio.current.srcObject = stream
+        refAudio.current.srcObject = srcObject
+        // let stream = new MediaStream();
+        // srcObject.getTracks().forEach((track) => {
+        //     stream.addTrack(track);
+        // });
+
     }, [srcObject])
 
     return <audio ref={refAudio} {...props} />
